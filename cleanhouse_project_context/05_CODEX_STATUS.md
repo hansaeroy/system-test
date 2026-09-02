@@ -1,7 +1,7 @@
 # 05_CODEX_STATUS.md
 # 클린하우스 입주청소 — Codex 작업 상태
 
-최종 업데이트: 2026-08-31
+최종 업데이트: 2026-09-02
 현재 단계: DESIGN EXPLORATION
 
 ## 저장소 기준
@@ -11,6 +11,11 @@
 - 따라서 현재 컨텍스트 문서는 로컬 `cleanhouse_project_context/`에 있는 자료를 기준으로 유지함
 
 ## 이번에 한 작업
+
+- Home 대표 4구간만 사용하는 A/B/C 데스크톱 디자인 검증 프로토타입을 추가했다.
+- 공통 사실과 Hero 메시지는 고정하고, A는 Clean Premium, B는 Editorial Trust, C는 Result First로 레이아웃·색·타입·이미지 위계를 분리했다.
+- 1280px 로컬 브라우저에서 세 route를 확인했으며 가격 5행, `1,200+`, Before / After, DESIGN MOCK ASSET 표기와 콘솔 오류 없음이 확인됐다.
+- 기존 공통 가격·신뢰·Before / After 구조를 제거하고 각 방향 전용 마크업과 레이아웃으로 재설계했다. Hero를 제외해도 A는 whitespace/table/centered number, B는 editorial index/image offset, C는 image overlay/proof composition으로 구분된다.
 
 - `README_CONTEXT.md`를 기준으로 프로젝트 문서 사용 순서를 확인했다.
 - `01_FACTS.md`, `02_FINAL_PLAN.md`, `03_DESIGN_DIRECTION.md`, `04_PRODUCTION_SPEC.md`를 모두 읽고 현재 작업 기준으로 사용하기 시작했다.
@@ -22,10 +27,22 @@
 
 ## 수정한 파일
 
+- `DESIGN.md`
+- `index.html`
+- `design-a.html`
+- `design-b.html`
+- `design-c.html`
+- `app.js`
+- `styles.css`
+
 - `cleanhouse_project_context/05_CODEX_STATUS.md` 신규 생성
 - 이번 커밋 대상: `README_CONTEXT.md`, `01_FACTS.md`, `02_FINAL_PLAN.md`, `03_DESIGN_DIRECTION.md`, `04_PRODUCTION_SPEC.md`, `05_CODEX_STATUS.md`
 
 ## 구현 상태
+
+- 전체 사이트 구현: 시작하지 않음
+- 디자인 검증 프로토타입: 완료
+- 비교 route: `/design-a.html`, `/design-b.html`, `/design-c.html`
 
 - 전체 사이트 구현: 시작하지 않음
 - 사업 사실: `01_FACTS.md` 기준 유지
