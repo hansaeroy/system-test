@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<title>현금 금액 계산기</title>
+<style>
+:root{--bg:#f5f7f4;--line:#dfe5dc;--green:#cfe8c6;--blue:#dce9ff;--text:#182018}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;overscroll-behavior:none}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif;background:var(--bg);color:var(--text)}
+.wrap{width:100%;height:100dvh;margin:0 auto;padding:7px;display:flex;flex-direction:column;gap:4px}
+.topbar{flex:0 0 31px;display:flex;align-items:center}
+h1{margin:0;font-size:21px;line-height:1;letter-spacing:-.04em;white-space:nowrap}
+.card{flex:1;min-height:0;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.head,.row{display:grid;grid-template-columns:1.45fr .72fr 1.25fr;align-items:center}
+.head{flex:0 0 32px;background:var(--green);font-weight:800;text-align:center;border-bottom:1px solid var(--line);font-size:12px}
+#rows{flex:1;min-height:0;display:grid;grid-template-rows:repeat(7,minmax(0,1fr))}
+#rows .row{min-height:0}
+.row{border-bottom:1px solid var(--line)}
+.cell{padding:2px 6px;min-width:0}
+.label{font-weight:750;letter-spacing:-.03em;font-size:12px;line-height:1;white-space:nowrap}
+input{width:100%;height:28px;border:1px solid #cdd5cc;border-radius:7px;padding:0 6px;font-size:16px;text-align:right;outline:none;background:#fff}
+input:focus{border-color:#6e9f72;box-shadow:0 0 0 2px rgba(84,134,91,.13)}
+.amount{text-align:right;font-size:12px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+.etc{flex:0 0 40px;background:#fbfcfa}
+.total{flex:0 0 46px;display:grid;grid-template-columns:1fr 1.4fr;align-items:center;background:var(--blue);font-weight:900;font-size:15px}
+.total .value{text-align:right;font-size:26px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.actions{flex:0 0 38px;display:grid;grid-template-columns:1.35fr 1fr;gap:5px}
+button{min-height:38px;border:0;border-radius:9px;font-family:inherit;font-size:13px;font-weight:800;touch-action:manipulation}
+.copy{background:#1f6f3f;color:#fff}.reset{background:#e9ede8;color:#29312a}
+@media(max-height:680px){.topbar{flex-basis:26px}h1{font-size:17px}.head{flex-basis:28px}.label,.amount{font-size:11px}input{height:25px}.etc{flex-basis:36px}.total{flex-basis:41px}.total .value{font-size:20px}.actions{flex-basis:34px}button{min-height:34px}}
+@media(max-height:560px){.topbar{display:none}.head{flex-basis:25px}.etc{flex-basis:32px}.total{flex-basis:36px}.actions{flex-basis:31px}button{min-height:31px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="topbar"><h1>현금 금액 계산기</h1></div>
+  <section class="card">
+    <div class="head"><div class="cell">지폐</div><div class="cell">장</div><div class="cell">합계</div></div>
+    <div id="rows"></div>
+    <div class="row etc">
+      <div class="cell"><div class="label">기타 금액</div></div>
+      <div class="cell"><input id="etcAmount" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-label="기타 금액"></div>
+      <div class="cell amount" id="etcTotal">0원</div>
+    </div>
+    <div class="total"><div class="cell">총합계</div><div class="cell value" id="grandTotal">0원</div></div>
+  </section>
+  <div class="actions">
+    <button class="copy" id="copyBtn">계산 내용 복사</button>
+    <button class="reset" id="resetBtn">전체 초기화</button>
+  </div>
+</main>
+<script>
+const denominations=[
+ {label:"1천만원(수표)",value:10000000},
+ {label:"100만원(수표)",value:1000000},
+ {label:"10만원(수표)",value:100000},
+ {label:"5만원",value:50000},
+ {label:"1만원",value:10000},
+ {label:"5천원",value:5000},
+ {label:"1천원",value:1000}
+];
+const rowsEl=document.getElementById("rows"),etcInput=document.getElementById("etcAmount"),etcTotal=document.getElementById("etcTotal"),grandTotal=document.getElementById("grandTotal");
+const fmt=n=>new Intl.NumberFormat("ko-KR").format(n)+"원";
+const clean=v=>Math.max(0,Math.floor(Number(v)||0));
+denominations.forEach((d,i)=>{
+ const row=document.createElement("div");row.className="row";
+ row.innerHTML=`<div class="cell"><div class="label">${d.label}</div></div><div class="cell"><input class="count" data-index="${i}" type="number" inputmode="numeric" min="0" step="1" placeholder="0" aria-label="${d.label} 장수"></div><div class="cell amount" id="subtotal-${i}">0원</div>`;
+ rowsEl.appendChild(row);
+});
+const countInputs=[...document.querySelectorAll(".count")];
+function calculate(){
+ let total=0;
+ countInputs.forEach(input=>{
+   const i=Number(input.dataset.index),count=clean(input.value),subtotal=count*denominations[i].value;
+   document.getElementById(`subtotal-${i}`).textContent=fmt(subtotal);total+=subtotal;
+ });
+ const etc=clean(etcInput.value);etcTotal.textContent=fmt(etc);total+=etc;grandTotal.textContent=fmt(total);return total;
+}
+function makeCopyText(){
+ const lines=["[현금 계산 내역]"];
+ countInputs.forEach(input=>{
+   const i=Number(input.dataset.index),count=clean(input.value);
+   if(count>0) lines.push(`${denominations[i].label} × ${count}장 = ${fmt(count*denominations[i].value)}`);
+ });
+ const etc=clean(etcInput.value);if(etc>0)lines.push(`기타 금액 = ${fmt(etc)}`);
+ lines.push(`총합계 = ${fmt(calculate())}`);return lines.join("\n");
+}
+function copyResult(){
+ const text=makeCopyText();
+ if(window.Android&&window.Android.copyText){window.Android.copyText(text);return;}
+ const ta=document.createElement("textarea");ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+}
+function resetAll(){countInputs.forEach(i=>i.value="");etcInput.value="";calculate();}
+countInputs.forEach(i=>i.addEventListener("input",calculate));
+etcInput.addEventListener("input",calculate);
+document.getElementById("copyBtn").addEventListener("click",copyResult);
+document.getElementById("resetBtn").addEventListener("click",resetAll);
+calculate();
+</script>
+</body>
+</html>
